@@ -1,0 +1,215 @@
+<!
+DOCTYPE
+html>
+<html>
+<head>
+    <title>Agricultural Drone Survey System</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous">
+</head>
+<body style="zoom: 0.9;">
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0"
+    href="#">Agricultural Drone Survey System</a>
+</nav>
+<div class="mx-2 mt-5">
+    <div class="row">
+        <main role="main" class="col-sm-11 mx-auto">
+            <div class="d-flex justify-content-between flex-wrap
+            flex-md-nowrap align-items-center pt-3 pb-2 mb-3 borderbottom">
+                <h1 class="h2">Choose Survey Area</h1>
+            </div>
+            <div class="row ">
+                <div class="col-8">
+                    <div class="w-100" style="height: 75vh" id="map"></div>
+                </div>
+                <div class="col-4">
+                    <div style="max-height: 300px; overflow-x: unset; overflow-y: scroll">
+                        <table class="table" id="coordinatesTable">
+                            <thead>
+                            <tr>
+                                <td>Latitude</td>
+                                <td>Longitude</td>
+                                <td>Altitude</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br>
+                    <p><b>Please add waypoints</b></p>
+<!--                    <label id="altLabel" for="groundCover">Please add waypoints</label>-->
+<!--                    <select class="w-100" id="groundCover">-->
+<!--                        <option value="0.9">Altitude: .9 Meters / Width: 1 Meter</option>-->
+<!--                        <option value="1.35">Altitude 1.4 Meters / Width: 2 Meters</option>-->
+<!--                        <option value="1.7">Altitude: 1.7 Meters / Width: 3 Meters</option>-->
+<!--                        <option value="3.0">Altitude: 3 Meters / Width: 5 Meters</option>-->
+<!--                        <option value="7.0">Altitude: 7 Meters / Width: 10 Meters</option>-->
+<!--                    </select>-->
+                    <br>
+
+                    <form onsubmit="alerting()">
+                        <label for="formlat">Latitude:</label>
+                        <input type="number" id="formlat" name="formlat" min = -90 max = 90 required /><br><br>
+                        <label for="formlong">Longitude:</label>
+                        <input type="number" id="formlong" name="formlong" min = -180 max = 180 required /><br><br>
+                        <label for="formalt">Altitude:</label>
+                        <input type="number" id="formalt" name="formalt" min = 0 required /><br><br>
+                        <button type="submit" value="Add to Table">Add to Table</button>
+                    </form>
+
+                    <button onclick="run_drone_mapper()">Run</button>
+                    <button onclick="landing()">Landing</button>
+
+                    <p id="test">Click the "Submit" button and the form-data will be sent to a page on the
+                    server called "action_page.php".</p>
+
+
+                </div>
+            </div>
+            <div id="images_container" class="row"></div>
+        </main>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzFXegu2gBl6Nxp9Z4iB1pphHDm_ppm4Q&callback=initMap"-->
+<!--async defer></script>-->
+<script>
+<!--    var map;-->
+<!--    var area;-->
+<!--    var path;-->
+<!--    function initMap() {-->
+<!--        map = new google.maps.Map(document.getElementById('map'), {center: {lat: 52.654, lng: -6.654},zoom: 16, mapTypeId: 'satellite'});-->
+<!--        area = new google.maps.Polygon({-->
+<!--            map: map,-->
+<!--            strokeColor: "#FF0000",-->
+<!--            strokeOpacity: 1.0,-->
+<!--            strokeWeight: 2,-->
+<!--            fillColor: "#FF0000",-->
+<!--            fillOpacity: 0.10,-->
+<!--            editable: true,-->
+<!--            draggable: false,-->
+<!--            clickable: true-->
+<!--            });-->
+<!--        area.setMap(map);-->
+<!--        map.addListener('click', addLatLng);-->
+<!--    }-->
+
+
+<!--    function addLatLng(event) {-->
+<!--        path = area.getPath();-->
+<!--        if(path.length > 3) {-->
+<!--&lt;!&ndash;        alert('You Can Only Select Four Coordinates');&ndash;&gt;-->
+<!--        } else {-->
+<!--             let latAndLong = event.latLng;-->
+<!--             path.push(latAndLong);-->
+<!--             console.log(path);-->
+<!--             $('#coordinatesTable tbody').append(`-->
+<!--             <tr>-->
+<!--                 <td>${latAndLong.lat()}</td>-->
+<!--                 <td>${latAndLong.lng()}</td>-->
+<!--             </tr>`);-->
+<!--        }-->
+
+<!--    }-->
+    var GPSLocations = [];
+
+    function alerting() {
+<!--        console.log("here");-->
+        document.getElementById('test').innerHTML = "hi"
+    }
+
+    function addToTable() {
+
+         $('#coordinatesTable tbody').append(`
+         <tr>
+             <td>`+document.getElementById('formlat').value+`</td>
+             <td>`+document.getElementById('formlong').value+`</td>
+             <td>`+document.getElementById('formalt').value+`</td>
+         </tr>`);
+         document.getElementById('test').innerHTML = document.getElementById('formlat').value.toString
+    }
+
+    function reset() {
+        $('#coordinatesTable tbody').empty();
+        while(area.getPath().length > 0) {
+            area.getPath().pop();
+        }
+    }
+
+    function landing() {
+        $.ajax({
+            url: "land",
+            dataType: "json",
+            type: "GET"})
+    }
+
+    function run_drone_mapper() {
+        if(path.length < 4){
+            alert('You Must Select Four Coordinates');
+        } else {
+            let path = area.getPath();
+            let coords = [];
+            for(let index in path["i"]) {
+                let co = path["i"][index];
+                let lat = co.lat();
+                let lng = co.lng();
+                let coord = {
+                    "lat": lat,
+                    "lng": lng
+            };
+            coords.push(coord)
+        }
+        let alt = $('#groundCover').val();
+        let data = {};
+        console.log(coords);
+        data['coordinates'] = coords;
+        data['altitude'] = alt;
+        $.ajax({
+            url: "run",
+            data: JSON.stringify(data),
+            contentType: "json",
+            type: "POST"})
+        }
+    }
+
+
+    function check_for_images() {
+        var intervalID = window.setInterval(myCallback, 5000);
+
+        function myCallback() {
+            $.ajax({
+                url: "images",
+                dataType: "json",
+                type: "GET",
+                success: function(images) {
+                    display_images(images);
+                },
+                error: function(err) {
+<!--                    alert(err);-->
+                }
+            });
+        }
+    }
+<!--    check_for_images();-->
+
+
+    function display_images(img_data) {
+        let images_container = document.getElementById('images_container');
+        let images = "";
+        for(let index in img_data) {
+            let img_url = "static/images/" + img_data[index];
+            let image_template = `<div class="col-3"><img class="img-thumbnail" src="${img_url}"/></div>`;
+            images += image_template;
+        }
+        images_container.innerHTML = images;
+    }
+
+</script>
+</body>
+</html>

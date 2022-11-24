@@ -1,0 +1,126 @@
+<!
+DOCTYPE
+html>
+<html>
+<head>
+    <title>FireBot Data Collection System</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous">
+</head>
+<body style="zoom: 0.9;">
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0"
+    href="#">FireBot Data Collection System</a>
+</nav>
+<div class="mx-2 mt-5">
+    <div class="row">
+        <a href="/createMission/">Create Mission</a>
+        <main role="main" class="col-sm-11 mx-auto">
+            <p id = droneConnection>Connection to drone: disconnected</p>
+            <p id = controllerConnection>Connection to controller: disconnected</p>
+            <p id = battery>Battery level: -</p>
+            <br>
+            <button onclick="startVideo()">Start Video</button>
+            <button onclick="stopVideo()">Stop Action</button>
+            <button onclick="flying()">Start Action</button>
+            <button onclick="landing()">Landing</button>
+            <div id="images_container" class="row"></div>
+        </main>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+
+    function landing() {
+        $.ajax({
+            url: "land",
+            dataType: "json",
+            type: "GET"})
+    }
+
+    function startVideo() {
+        $.ajax({
+            url: "startVideo",
+            dataType: "json",
+            type: "GET"})
+    }
+
+    function stopVideo() {
+        $.ajax({
+            url: "stopVideo",
+            dataType: "json",
+            type: "GET"})
+    }
+
+    function flying() {
+        $.ajax({
+            url: "fly",
+            dataType: "json",
+            type: "GET"})
+    }
+
+    function monitor_battery() {
+        var intervalID = window.setInterval(myCallback, 5000);
+        function myCallback() {
+            $.ajax({
+                url: "battery",
+                type: "GET",
+                success: function(result) {
+                    update_battery(result + "%")
+<!--                    console.log(text)-->
+                },
+                error: function(err) {
+                    console.log("error")
+                    update_battery("-")
+                }
+            });
+
+        }
+    }
+
+    monitor_battery()
+
+    function update_battery(result) {
+        let drone_battery = document.getElementById('battery');
+        let text = "Battery level: " + result;
+        drone_battery.innerHTML = text;
+    }
+
+    function monitor_connection() {
+        var intervalID = window.setInterval(myCallback, 5000);
+        function myCallback() {
+            $.ajax({
+                url: "connect",
+    <!--            dataType: "json",-->
+                type: "GET",
+                success: function(text) {
+                    update_connection(text)
+                    console.log(text)
+                },
+                error: function(err) {
+                    console.log("error")
+                    update_connection("disconnected")
+                }
+            });
+
+        }
+    }
+    monitor_connection()
+
+    function update_connection(result) {
+        let drone_connection = document.getElementById('droneConnection');
+        let controller_connection = document.getElementById('controllerConnection');
+        let text = "Connection to drone: " + result;
+        drone_connection.innerHTML = text;
+        controller_connection.innerHTML = text;
+    }
+
+
+</script>
+</body>
+</html>

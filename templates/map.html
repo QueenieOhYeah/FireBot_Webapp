@@ -3,7 +3,7 @@ DOCTYPE
 html>
 <html>
 <head>
-    <title>Agricultural Drone Survey System</title>
+    <title>FireBot Data Collection System</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -13,14 +13,19 @@ html>
 <body style="zoom: 0.9;">
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0"
-    href="#">Agricultural Drone Survey System</a>
+    href="#">FireBot Data Collection System</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/createMission/">Create Mission</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Run Mission</a>
 </nav>
+
 <div class="mx-2 mt-5">
+<!--    <a href="#createMission/">Create Mission</a>-->
+<!--    <a href="#">Run Mission</a>-->
     <div class="row">
         <main role="main" class="col-sm-11 mx-auto">
             <div class="d-flex justify-content-between flex-wrap
             flex-md-nowrap align-items-center pt-3 pb-2 mb-3 borderbottom">
-                <h1 class="h2">Choose Survey Area</h1>
+                <h1 class="h2">Create New Missions</h1>
             </div>
             <div class="row ">
                 <div class="col-8">
@@ -52,21 +57,26 @@ html>
 <!--                    </select>-->
                     <br>
 
-                    <form onsubmit="alerting()">
+                    <form id="formData">
                         <label for="formlat">Latitude:</label>
-                        <input type="number" id="formlat" name="formlat" min = -90 max = 90 required /><br><br>
+                        <input type="number" id="formlat" name="formlat" min = -90 max = 90 step = ".000001"  required /><br><br>
                         <label for="formlong">Longitude:</label>
-                        <input type="number" id="formlong" name="formlong" min = -180 max = 180 required /><br><br>
+                        <input type="number" id="formlong" name="formlong" min = -180 max = 180 step = ".000001"  required /><br><br>
                         <label for="formalt">Altitude:</label>
-                        <input type="number" id="formalt" name="formalt" min = 0 required /><br><br>
-                        <button type="submit" value="Add to Table">Add to Table</button>
+                        <input type="number" id="formalt" name="formalt" min = 0 step = ".000001"  required /><br><br>
+                        <button type="submit">Add Waypoint to Mission</button>
                     </form>
 
-                    <button onclick="run_drone_mapper()">Run</button>
-                    <button onclick="landing()">Landing</button>
+                    <button onclick="reset()">Reset Mission</button>
+                    <form id="missionData">
+                        <label for="missionName">Mission Name</label>
+                        <input type="text" id="missionName" name="missionName" required /><br><br>
+                        <button type="submit">Confirm and Save Mission</button>
+                    </form>
+<!--                    <button onclick="saveMission()">Confirm and Save Mission</button>-->
 
-                    <p id="test">Click the "Submit" button and the form-data will be sent to a page on the
-                    server called "action_page.php".</p>
+<!--                    <p id="test">Click the "Submit" button and the form-data will be sent to a page on the-->
+<!--                    server called "action_page.php".</p>-->
 
 
                 </div>
@@ -119,27 +129,36 @@ html>
 <!--    }-->
     var GPSLocations = [];
 
-    function alerting() {
-<!--        console.log("here");-->
-        document.getElementById('test').innerHTML = "hi"
-    }
+    const form = document.getElementById('formData');
+    form.addEventListener('submit', addToTable);
 
-    function addToTable() {
+    function addToTable(event) {
+          event.preventDefault();
+          const data = new FormData(event.target);
+          const formJSON = Object.fromEntries(data.entries());
+
+          let lat = document.getElementById('formlat').value;
+          let long = document.getElementById('formlong').value;
+          let alt = document.getElementById('formalt').value;
 
          $('#coordinatesTable tbody').append(`
          <tr>
-             <td>`+document.getElementById('formlat').value+`</td>
-             <td>`+document.getElementById('formlong').value+`</td>
-             <td>`+document.getElementById('formalt').value+`</td>
+             <td>`+lat+`</td>
+             <td>`+long+`</td>
+             <td>`+alt+`</td>
          </tr>`);
-         document.getElementById('test').innerHTML = document.getElementById('formlat').value.toString
+         GPSLocations.push({
+            "lat":lat,
+            "lng":long,
+            "alt":alt});
+         console.log(GPSLocations);
+
     }
 
     function reset() {
         $('#coordinatesTable tbody').empty();
-        while(area.getPath().length > 0) {
-            area.getPath().pop();
-        }
+        GPSLocations = [];
+        console.log(GPSLocations);
     }
 
     function landing() {
@@ -149,32 +168,40 @@ html>
             type: "GET"})
     }
 
-    function run_drone_mapper() {
-        if(path.length < 4){
-            alert('You Must Select Four Coordinates');
-        } else {
-            let path = area.getPath();
-            let coords = [];
-            for(let index in path["i"]) {
-                let co = path["i"][index];
-                let lat = co.lat();
-                let lng = co.lng();
-                let coord = {
-                    "lat": lat,
-                    "lng": lng
-            };
-            coords.push(coord)
-        }
-        let alt = $('#groundCover').val();
+    const missionForm = document.getElementById('missionData');
+    missionForm.addEventListener('submit', saveMission);
+    function saveMission() {
+<!--        if(path.length < 4){-->
+<!--            alert('You Must Select Four Coordinates');-->
+<!--        } else {-->
+<!--            let path = area.getPath();-->
+<!--            let coords = [];-->
+<!--            for(let index in path["i"]) {-->
+<!--                let co = path["i"][index];-->
+<!--                let lat = co.lat();-->
+<!--                let lng = co.lng();-->
+<!--                let coord = {-->
+<!--                    "lat": lat,-->
+<!--                    "lng": lng-->
+<!--            };-->
+<!--            coords.push(coord)-->
+<!--        }-->
+<!--        let alt = $('#groundCover').val();-->
+<!--        let data = {};-->
+<!--        console.log(coords);-->
+<!--        data['coordinates'] = coords;-->
+<!--        data['altitude'] = alt;-->
         let data = {};
-        console.log(coords);
-        data['coordinates'] = coords;
-        data['altitude'] = alt;
-        $.ajax({
-            url: "run",
-            data: JSON.stringify(data),
-            contentType: "json",
-            type: "POST"})
+        data['coordinates'] = GPSLocations;
+        data['mission'] = document.getElementById('missionName').value;
+        if (GPSLocations.length == 0) {
+            alert('No waypoint in the mission!')
+        } else {
+            $.ajax({
+                url: "saveCoords",
+                data: JSON.stringify(data),
+                contentType: "json",
+                type: "POST"})
         }
     }
 

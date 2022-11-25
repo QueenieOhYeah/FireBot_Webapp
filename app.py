@@ -9,6 +9,7 @@ import videostream_button
 import flight
 import connection
 import battery
+import read_missions
 
 app = Flask(__name__)
 
@@ -37,21 +38,6 @@ def display_html_page():
     return page
 
 
-@app.route('/run', methods=["POST"])
-def run_drone_mapper():
-    # Write Co-ordinates to file
-    req = request
-    content = json.loads(req.data)
-    with open("Coordinates.txt", "w+") as file:
-        for coord in content['coordinates']:
-            file.write("({},{})".format(coord['lat'], coord['lng']))
-            file.write('\n')
-        file.write(content['altitude'])
-    # run drone script
-    # droneMapper.main()
-    return content
-
-
 @app.route('/startVideo')
 def start_video():
     streamer.start()
@@ -70,10 +56,15 @@ def land():
     return "landings"
 
 
-@app.route('/fly')
+@app.route('/fly', methods=["POST"])
 def fly():
-    flight.flight(drone)
-    return "fly"
+    global missions
+    mission = request.form.get('missionOptions')
+    print(mission)
+    print(missions[mission])
+    GPSpoints = missions[mission]
+    # flight.flight(drone)
+    return render_template('index.html')
 
 
 @app.route('/connect')
@@ -97,16 +88,45 @@ def get_images():
     path_to_images = 'static/images/'
     for entry in os.listdir(path_to_images):
         if os.path.isfile(os.path.join(path_to_images, entry)):
-            print(entry)
             images_urls[count] = entry
             count += 1
     return images_urls
 
+@app.route('/loadMissions', methods=["POST"])
+def load_mission():
+    global missions
+    # Write Co-ordinates to file
+    data_dict = read_missions.read_missions()
+    if (missions != data_dict):
+        missions = data_dict
+    # print(missions)
+    # print("here")
+    data = []
+    for mission in data_dict:
+        data.append({mission:data_dict[mission]})
+        # data.append({mission})
+    # print(data)
+    return data
 
 @app.route('/createMission/')
 def createMission():
     return render_template('map.html')
 
+
+@app.route('/createMission/saveCoords', methods=["POST"])
+def save_mission():
+    # Write Co-ordinates to file
+    req = request
+    content = json.loads(req.data)
+    name = "missions/" + content['mission'] + ".txt";
+    with open(name, "w+") as file:
+        for coord in content['coordinates']:
+            file.write("{} {} {}".format(coord['lat'], coord['lng'], coord['alt']))
+            file.write('\n')
+        # file.write(content['altitude'])
+    # run drone script
+    # droneMapper.main()
+    return content
 
 # DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
 #
@@ -120,7 +140,7 @@ def createMission():
 # two videostreams use only one
 # videostream.test_streaming(drone)
 # test_video.streaming(drone)
-
+missions = None
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)

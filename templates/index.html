@@ -15,18 +15,27 @@ html>
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0"
     href="#">FireBot Data Collection System</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/createMission/">Create Mission</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Run Mission</a>
 </nav>
 <div class="mx-2 mt-5">
     <div class="row">
-        <a href="/createMission/">Create Mission</a>
         <main role="main" class="col-sm-11 mx-auto">
             <p id = droneConnection>Connection to drone: disconnected</p>
             <p id = controllerConnection>Connection to controller: disconnected</p>
             <p id = battery>Battery level: -</p>
             <br>
+            <label id="altLabel" for="missionOptions">Choose a mission</label>
+            <form id="missionData" action="/fly" method="post">
+                <select class="w-100" name="missionOptions" id="missionOptions" onchange="doSomething()">
+                </select>
+                <button type="submit">Start Action</button>
+            </form>
+
+
             <button onclick="startVideo()">Start Video</button>
-            <button onclick="stopVideo()">Stop Action</button>
-            <button onclick="flying()">Start Action</button>
+            <button onclick="stopVideo()">Stop Video</button>
+<!--            <button onclick="flying()">Start Action</button>-->
             <button onclick="landing()">Landing</button>
             <div id="images_container" class="row"></div>
         </main>
@@ -118,6 +127,33 @@ html>
         let text = "Connection to drone: " + result;
         drone_connection.innerHTML = text;
         controller_connection.innerHTML = text;
+    }
+
+    function loadMissions() {
+        $.ajax({
+                url: "loadMissions",
+                contentType: "json",
+                type: "POST",
+                success: function(data) {
+                    uploadMissionForm(data)
+                }
+                })
+
+    }
+    loadMissions()
+
+    function uploadMissionForm(data) {
+        for(var index in data) {
+           for (const [key, value] of Object.entries(data[index])) {
+               console.log(value)
+               console.log(data[index][key])
+               $('#missionOptions').append(`<option value=`+key+`>`+key+`</option>`);
+           }
+        }
+    }
+
+    function doSomething() {
+        console.log("here")
     }
 
 

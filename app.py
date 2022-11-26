@@ -37,17 +37,42 @@ def display_html_page():
         page = file.read()
     return page
 
+@app.route('/connectDrone')
+def connect_to_drone():
+    global drone
+    global streamer
+    global is_stream
+
+    # drone.connect(retry=3)
+    drone.connect()
+    if connection.check_drone_connection(drone):
+        # print("connect to drone")
+        if not streamer:
+            streamer = videostream_button.OlympeStreaming(drone)
+            ''' Decide when to start video streaming'''
+            streamer.start()
+        return "success"
+    return "failure"
 
 @app.route('/startVideo')
 def start_video():
+    global drone
+    global streamer
+    # if not streamer:
+    #     print("streamer is none")
+    print(streamer)
+    # streamer = videostream_button.OlympeStreaming(drone)
+    print(streamer)
     streamer.start()
     return "start Video"
 
 
-@app.route('/stopVideo')
-def stop_video():
-    streamer.stop()
-    return "start Video"
+# @app.route('/stopVideo')
+# def stop_video():
+#     global streamer
+#     # streamer = videostream_button.OlympeStreaming(drone)
+#     streamer.stop()
+#     return "start Video"
 
 
 @app.route('/land')
@@ -59,16 +84,23 @@ def land():
 @app.route('/fly', methods=["POST"])
 def fly():
     global missions
+    global drone
     mission = request.form.get('missionOptions')
-    print(mission)
+    max_alt = request.form.get('maxAlt')
+    elevation = request.form.get('takeOffEle')
     print(missions[mission])
-    GPSpoints = missions[mission]
-    # flight.flight(drone)
+    print(max_alt)
+    print(elevation)
+    gps_points = missions[mission]
+    flight.flight(drone, gps_points, eval(max_alt), eval(elevation))
     return render_template('index.html')
 
 
 @app.route('/connect')
 def connect_status():
+    global drone
+    print(drone)
+    print(connection.check_drone_connection(drone))
     if connection.check_drone_connection(drone):
         print("success")
         return "connected"
@@ -77,20 +109,12 @@ def connect_status():
 
 @app.route('/battery')
 def get_battery_level():
+    global drone
+    print(drone)
+    print("drone")
     response = battery.battery_level(drone)
     return str(response)
 
-
-@app.route('/images')
-def get_images():
-    images_urls = {}
-    count = 0
-    path_to_images = 'static/images/'
-    for entry in os.listdir(path_to_images):
-        if os.path.isfile(os.path.join(path_to_images, entry)):
-            images_urls[count] = entry
-            count += 1
-    return images_urls
 
 @app.route('/loadMissions', methods=["POST"])
 def load_mission():
@@ -107,6 +131,7 @@ def load_mission():
         # data.append({mission})
     # print(data)
     return data
+
 
 @app.route('/createMission/')
 def createMission():
@@ -128,14 +153,35 @@ def save_mission():
     # droneMapper.main()
     return content
 
-# DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
-#
-# # controller
-# # DRONE_IP = os.environ.get("DRONE_IP", "192.168.53.1")
-# # DRONE_IP = "192.168.53.1"
-# drone = olympe.Drone(DRONE_IP)
+@app.route('/data/')
+def get_data():
+    return render_template('images.html')
+
+
+@app.route('/data/images')
+def get_images():
+    images_urls = {}
+    count = 0
+    path_to_images = 'static/images/'
+    for entry in os.listdir(path_to_images):
+        if os.path.isfile(os.path.join(path_to_images, entry)):
+            images_urls[count] = entry
+            count += 1
+    return images_urls
+
+
+DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
+# #
+# # # controller
+# # # DRONE_IP = os.environ.get("DRONE_IP", "192.168.53.1")
+# # # DRONE_IP = "192.168.53.1"
+drone = olympe.Drone(DRONE_IP)
 # drone.connect(retry=3)
+streamer = None
 # streamer = videostream_button.OlympeStreaming(drone)
+is_stream = False
+import threading
+
 
 # two videostreams use only one
 # videostream.test_streaming(drone)

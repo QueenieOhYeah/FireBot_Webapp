@@ -6,10 +6,12 @@ html>
     <title>FireBot Data Collection System</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
         crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    </style>
 </head>
 <body style="zoom: 0.9;">
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
@@ -17,6 +19,7 @@ html>
     href="#">FireBot Data Collection System</a>
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/createMission/">Create Mission</a>
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Run Mission</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/data/">Check Data</a>
 </nav>
 <div class="mx-2 mt-5">
     <div class="row">
@@ -25,25 +28,54 @@ html>
             <p id = controllerConnection>Connection to controller: disconnected</p>
             <p id = battery>Battery level: -</p>
             <br>
-            <label id="altLabel" for="missionOptions">Choose a mission</label>
             <form id="missionData" action="/fly" method="post">
+                <label id="altLabel" for="missionOptions">Choose a mission</label>
                 <select class="w-100" name="missionOptions" id="missionOptions" onchange="doSomething()">
                 </select>
+                <label for="maxAlt">Flight altitude(m):</label>
+                <i class="fa fa-info-circle" style="font-size:24px" title='Estimate a save flight altitude above the take off point'></i>
+                <input type="number" id="maxAlt" name="maxAlt" min = 0 required /><br><br>
+                <label for="takeOffEle">Take off elevation(m):</label>
+                <i class="fa fa-info-circle" style="font-size:24px" title='Enter the elevation above sea level of the take off location'></i>
+                <input type="number" id="takeOffEle" name="takeOffEle" min = 0 required /><br><br>
                 <button type="submit">Start Action</button>
             </form>
 
 
             <button onclick="startVideo()">Start Video</button>
-            <button onclick="stopVideo()">Stop Video</button>
+<!--            <button onclick="stopVideo()">Stop Video</button>-->
 <!--            <button onclick="flying()">Start Action</button>-->
             <button onclick="landing()">Landing</button>
             <div id="images_container" class="row"></div>
+
         </main>
+
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
+    var DroneConnectionFlag = false
+
+    function connectToDrone() {
+        var intervalID = window.setInterval(myCallback, 3000);
+        function myCallback() {
+            if (!DroneConnectionFlag) {
+                $.ajax({
+                    url: "connectDrone",
+                    type: "GET",
+                    success: function(result) {
+                        if (result == "success") {
+                            DroneConnectionFlag = true;
+                            console.log("here")
+                        }
+                    }
+                });
+            }
+        }
+
+    }
+    connectToDrone()
 
     function landing() {
         $.ajax({
@@ -76,18 +108,22 @@ html>
     function monitor_battery() {
         var intervalID = window.setInterval(myCallback, 5000);
         function myCallback() {
-            $.ajax({
-                url: "battery",
-                type: "GET",
-                success: function(result) {
-                    update_battery(result + "%")
-<!--                    console.log(text)-->
-                },
-                error: function(err) {
-                    console.log("error")
-                    update_battery("-")
-                }
-            });
+            console.log(DroneConnectionFlag)
+            if (DroneConnectionFlag) {
+                $.ajax({
+                    url: "battery",
+                    type: "GET",
+                    success: function(result) {
+                        update_battery(result + "%")
+                    },
+                    error: function(err) {
+                        console.log("error")
+                        update_battery("-")
+                    }
+                });
+            } else {
+                console.log("not flag")
+            }
 
         }
     }
@@ -103,25 +139,29 @@ html>
     function monitor_connection() {
         var intervalID = window.setInterval(myCallback, 5000);
         function myCallback() {
-            $.ajax({
-                url: "connect",
-    <!--            dataType: "json",-->
-                type: "GET",
-                success: function(text) {
-                    update_connection(text)
-                    console.log(text)
-                },
-                error: function(err) {
-                    console.log("error")
-                    update_connection("disconnected")
-                }
-            });
+            if (DroneConnectionFlag) {
+                $.ajax({
+                    url: "connect",
+        <!--            dataType: "json",-->
+                    type: "GET",
+                    success: function(text) {
+                        update_connection(text)
+                        console.log(text)
+                    },
+                    error: function(err) {
+                        console.log("error")
+                        DroneConnectionFlag = false
+                        update_connection("disconnected")
+                    }
+                });
+            }
 
         }
     }
     monitor_connection()
 
     function update_connection(result) {
+        if (result == "disconnected") DroneConnectionFlag = false
         let drone_connection = document.getElementById('droneConnection');
         let controller_connection = document.getElementById('controllerConnection');
         let text = "Connection to drone: " + result;

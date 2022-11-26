@@ -1,0 +1,112 @@
+<!
+DOCTYPE
+html>
+<html>
+<head>
+    <title>FireBot Data Collection System</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous">
+</head>
+<body style="zoom: 0.9;">
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0"
+    href="#">FireBot Data Collection System</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/createMission/">Create Mission</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Run Mission</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/images/">Check Data</a>
+</nav>
+
+<div class="mx-2 mt-5">
+<!--    <a href="#createMission/">Create Mission</a>-->
+<!--    <a href="#">Run Mission</a>-->
+    <div class="row">
+        <main role="main" class="col-sm-11 mx-auto">
+            <div id="images_container" class="row"></div>
+        </main>
+    </div>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="img01">
+      <div id="caption"></div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzFXegu2gBl6Nxp9Z4iB1pphHDm_ppm4Q&callback=initMap"-->
+<!--async defer></script>-->
+<script>
+<!--    function check_for_images() {-->
+<!--        var intervalID = window.setInterval(myCallback, 5000);-->
+
+<!--        function myCallback() {-->
+<!--            $.ajax({-->
+<!--                url: "images",-->
+<!--                dataType: "json",-->
+<!--                type: "GET",-->
+<!--                success: function(images) {-->
+<!--                    display_images(images);-->
+<!--                },-->
+<!--                error: function(err) {-->
+<!--                    alert(err);-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    }-->
+        function setModal() {
+            var modal = document.getElementById("myModal");
+            console.log(this)
+
+<!--            var img = document.getElementById("myImg");-->
+            var modalImg = document.getElementById("img01");
+            var captionText = document.getElementById("caption");
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = "hi";
+<!--            captionText.innerHTML = this.alt;-->
+            var span = document.getElementsByClassName("close")[0];
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+        }
+
+
+
+        function check_for_images() {
+            $.ajax({
+                url: "images",
+                dataType: "json",
+                type: "GET",
+                success: function(images) {
+                    display_images(images);
+                },
+                error: function(err) {
+                    alert(err);
+                }
+            });
+
+        }
+    check_for_images();
+
+
+    function display_images(img_data) {
+        let images_container = document.getElementById('images_container');
+        let images = "";
+        for(let index in img_data) {
+            let img_url = "static/images/" + img_data[index];
+            let name = img_data[index];
+<!--            let image_template = `<div class="col-3"><img class="img-thumbnail" src="${img_url}"/></div>`;-->
+<!--            let image_template = `<div class="col-3"><img class="img-thumbnail" src="{{url_for('static', filename='')}}{{name}}"/></div>`;-->
+            let image_template = `<div class="col-3"><img class="img-thumbnail" src="{{url_for('static', filename='images/'+'NAME')}}" onclick="setModal(this)"/></div>`.replace("NAME",name);
+            images += image_template;
+        }
+        images_container.innerHTML = images;
+    }
+
+</script>
+</body>
+</html>

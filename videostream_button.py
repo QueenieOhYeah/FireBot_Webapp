@@ -5,6 +5,7 @@ import time
 import queue
 import cv2
 import logging
+from olympe.video.renderer import PdrawRenderer
 
 olympe.log.update_config({"loggers": {"olympe": {"level": "WARNING"}}})
 class OlympeStreaming(threading.Thread):

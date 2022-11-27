@@ -1,3 +1,5 @@
+
+
 from flask import Flask, request, render_template
 # import droneMapper
 import json
@@ -43,27 +45,31 @@ def connect_to_drone():
     global streamer
     global is_stream
 
-    # drone.connect(retry=3)
+    # drone.connect()
     drone.connect()
     if connection.check_drone_connection(drone):
-        # print("connect to drone")
-        if not streamer:
-            streamer = videostream_button.OlympeStreaming(drone)
-            ''' Decide when to start video streaming'''
-            streamer.start()
+    # #     print("connect to drone")
+    # #
+    #     # if not streamer:
+    #     if streamer:
+    #         streamer.stop()
+    #     streamer = videostream_button.OlympeStreaming(drone)
+    #     ''' Decide when to start video streaming'''
+    #     print(streamer)
+    #     streamer.start()
+
         return "success"
     return "failure"
 
 @app.route('/startVideo')
 def start_video():
-    global drone
-    global streamer
-    # if not streamer:
-    #     print("streamer is none")
-    print(streamer)
-    # streamer = videostream_button.OlympeStreaming(drone)
-    print(streamer)
-    streamer.start()
+    # global drone
+    # global streamer
+    # # if not streamer:
+    # #     print("streamer is none")
+    # # streamer = videostream_button.OlympeStreaming(drone)
+    # print(streamer)
+    # streamer.start()
     return "start Video"
 
 
@@ -173,13 +179,15 @@ def get_images():
 DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
 # #
 # # # controller
-# # # DRONE_IP = os.environ.get("DRONE_IP", "192.168.53.1")
-# # # DRONE_IP = "192.168.53.1"
+# DRONE_IP = os.environ.get("DRONE_IP", "192.168.53.1")
+# DRONE_IP = "192.168.42.1"
 drone = olympe.Drone(DRONE_IP)
-# drone.connect(retry=3)
-streamer = None
+drone.connect(retry=3)
+# streamer = None
+# streamer.start()
 # streamer = videostream_button.OlympeStreaming(drone)
-is_stream = False
+
+
 import threading
 
 
@@ -190,4 +198,3 @@ missions = None
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)
-

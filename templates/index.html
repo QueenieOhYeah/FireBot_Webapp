@@ -58,8 +58,8 @@ html>
     var DroneConnectionFlag = false
 
     function connectToDrone() {
-        var intervalID = window.setInterval(myCallback, 3000);
-        function myCallback() {
+<!--        var intervalID = window.setInterval(myCallback, 5000);-->
+<!--        function myCallback() {-->
             if (!DroneConnectionFlag) {
                 $.ajax({
                     url: "connectDrone",
@@ -68,11 +68,13 @@ html>
                         if (result == "success") {
                             DroneConnectionFlag = true;
                             console.log("here")
+                        } else {
+                            alert("Refresh to connect to the drone")
                         }
                     }
                 });
             }
-        }
+<!--        }-->
 
     }
     connectToDrone()

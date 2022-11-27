@@ -207,9 +207,9 @@ def test_streaming(drone):
 
 
 # if __name__ == "__main__":
-# #    SKYCTRL_IP = "192.168.53.1"
-#    DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
-# ##    drone = olympe.Drone(SKYCTRL_IP)
-#    drone = olympe.Drone(DRONE_IP)
+#    SKYCTRL_IP = "192.168.53.1"
+# #    DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
+#    drone = olympe.Drone(SKYCTRL_IP)
+#    # drone = olympe.Drone(DRONE_IP)
 #    assert drone.connect()
 #    test_streaming(drone)

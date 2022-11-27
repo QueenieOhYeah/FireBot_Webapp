@@ -15,6 +15,7 @@ from olympe.messages.rth import set_min_altitude, set_ending_hovering_altitude, 
 from olympe.messages.obstacle_avoidance import set_mode, status, alert_timer
 from olympe.messages.camera import take_photo
 from olympe.messages.skyctrl.CoPiloting import setPilotingSource
+import videostream_button
 
 olympe.log.update_config({"loggers": {"olympe": {"level": "ERROR"}}})
 
@@ -32,6 +33,9 @@ def flight(drone, gps_points, max_alt, elevation):
     #	SKYCTRL_IP = "192.168.53.1"
     #	drone = olympe.Drone(SKYCTRL_IP)
     #	assert drone.connect()
+
+    streamer = videostream_button.OlympeStreaming(drone)
+    streamer.start()
 
     # testing
     max_height = max_alt
@@ -57,6 +61,7 @@ def flight(drone, gps_points, max_alt, elevation):
     #
     #	#gps
     goto_gps(drone, max_height, min_height, take_off_altitute, gps_points)
+    streamer.stop()
 
 
 # drone.disconnect()
@@ -184,9 +189,10 @@ def goto_gps(drone, max_height, min_height, take_off_altitute, gps_points):
             print(i)
             drone(
                 FlyingStateChanged(state="hovering", _policy="check_wait")
-                >> StartPhoto(camera_id=0)
-                >> Photo(camera_id=0, type="taking_photo")
-                >> Photo(camera_id=0, type="stop", stop_reason="capture_done")).wait(10).success()
+                >> take_photo(cam_id=0)).wait(10).success()
+                # >> StartPhoto(camera_id=0)
+                # >> Photo(camera_id=0, type="taking_photo")
+                # >> Photo(camera_id=0, type="stop", stop_reason="capture_done")).wait(10).success()
             drone(
                 moveBy(0, 0, 0, 2 * math.pi / 4)
                 >> moveByChanged(status='DONE', _timeout=10)
@@ -202,7 +208,8 @@ def goto_gps(drone, max_height, min_height, take_off_altitute, gps_points):
     drone(
         return_to_home()
         >> state(state="in_progress")
-    ).wait()
+        >> FlyingStateChanged(state="hovering", _policy="check_wait")
+    ).wait().success()
 
 #
 # if __name__ == "__main__":

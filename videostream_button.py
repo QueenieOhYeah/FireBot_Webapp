@@ -117,9 +117,13 @@ logger = logging.getLogger(__name__)
 
 # if __name__ == "__main__":
 #     # eventually IP will be specified depending on what drone is chosen
-#     IP = "10.202.0.1"
+#     # IP = "10.202.0.1"
+#     IP = "192.168.53.1"
+#
+#     # real drone
+#     # IP = "192.168.42.1"
 #     drone = olympe.Drone(IP)
-#     drone.connect()
+#     assert drone.connect(retry=3)
 #     # drone(TakeOff()).wait().success()
 #
 #     streamer = OlympeStreaming(drone)
@@ -130,5 +134,5 @@ logger = logging.getLogger(__name__)
 #
 #     streamer.stop()
 #
-#     drone(Landing()).wait().success()
+#     # drone(Landing()).wait().success()
 #     drone.disconnect()

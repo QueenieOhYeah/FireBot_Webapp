@@ -1,3 +1,5 @@
+body {font-family: Arial, Helvetica, sans-serif;}
+
 .img {
   border-radius: 5px;
   cursor: pointer;
@@ -26,7 +28,7 @@
   margin: auto;
   display: block;
   width: 80%;
-  max-width: 700px;
+  max-width: 1000px;
 }
 
 /* Caption of Modal Image */
@@ -62,8 +64,8 @@
 /* The Close Button */
 .close {
   position: absolute;
-  top: 15px;
-  right: 35px;
+  top: 50px;
+  right: 800px;
   color: #f1f1f1;
   font-size: 40px;
   font-weight: bold;
@@ -72,7 +74,7 @@
 
 .close:hover,
 .close:focus {
-  color: #bbb;
+  color: #ffffff;
   text-decoration: none;
   cursor: pointer;
 }

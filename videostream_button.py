@@ -6,6 +6,7 @@ import queue
 import cv2
 import logging
 from olympe.video.renderer import PdrawRenderer
+from olympe.messages.ardrone3.PilotingState import moveToChanged, FlyingStateChanged
 
 olympe.log.update_config({"loggers": {"olympe": {"level": "WARNING"}}})
 class OlympeStreaming(threading.Thread):
@@ -106,6 +107,7 @@ class OlympeStreaming(threading.Thread):
                     # Don't forget to unref the yuv frame. We don't want to
                     # starve the video buffer pool
                     yuv_frame.unref()
+        cv2.destroyWindow("Frames via Olympe")
 
 def streaming(drone):
     streamer = OlympeStreaming(drone)
@@ -115,20 +117,59 @@ def streaming(drone):
 logger = logging.getLogger(__name__)
 
 
-# if __name__ == "__main__":
-#     # eventually IP will be specified depending on what drone is chosen
-#     IP = "10.202.0.1"
-#     drone = olympe.Drone(IP)
-#     drone.connect()
-#     # drone(TakeOff()).wait().success()
-#
-#     streamer = OlympeStreaming(drone)
-#     streamer.start()
-#
-#     ### Flight commands here ###
-#     time.sleep(300)
-#
-#     streamer.stop()
-#
-#     drone(Landing()).wait().success()
-#     drone.disconnect()
+def take_off(drone):
+    print("\n\n", drone.get_state(FlyingStateChanged)["state"], "\n\n")
+
+    #    exp = drone(
+    #        TakeOff()
+    #        >> PCMD(1, 0, 0, 0, 0, 0)
+    ##        >> FlyingStateChanged(state="hovering", _timeout=5)
+    #        >> FlyingStateChanged(state="takingoff", _timeout=5)
+    #    )
+    #    assert exp.wait(100), exp.explain()
+    #    print("\n\n",drone.get_state(FlyingStateChanged)["state"],"\n\n")
+    ##    drone.disconnect()
+
+    drone(
+        FlyingStateChanged(state="hovering", _policy="check")
+        | FlyingStateChanged(state="flying", _policy="check")
+        | (
+                GPSFixStateChanged(fixed=1, _timeout=10, _policy="check_wait")
+                >> (
+                        TakeOff(_no_expect=True)
+                        & FlyingStateChanged(
+                    state="hovering", _timeout=10, _policy="check_wait")
+                )
+        )
+    ).wait()
+
+if __name__ == "__main__":
+    # eventually IP will be specified depending on what drone is chosen
+    # IP = "10.202.0.1"
+    IP = "192.168.53.1"
+
+    # real drone
+    # IP = "192.168.42.1"
+    drone = olympe.Drone(IP)
+    assert drone.connect(retry=3)
+    # drone(TakeOff()).wait().success()
+    streamer = OlympeStreaming(drone)
+    streamer.start()
+
+    drone(
+        TakeOff()
+        >> FlyingStateChanged(state="hovering", _timeout=10, _policy="check_wait")).wait().success()
+    time.sleep(5)
+    #
+
+    drone(Landing()).wait().success()
+    #
+    # # take_off(drone)
+    #
+    # ### Flight commands here ###
+    time.sleep(300)
+
+    streamer.stop()
+
+    # drone(Landing()).wait().success()
+    drone.disconnect()

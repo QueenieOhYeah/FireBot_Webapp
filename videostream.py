@@ -6,7 +6,7 @@ import shlex
 import subprocess
 import tempfile
 import threading
-
+import time
 import olympe
 from olympe.messages.ardrone3.Piloting import TakeOff, Landing
 from olympe.messages.ardrone3.Piloting import moveBy
@@ -201,15 +201,20 @@ def test_streaming(drone):
     # Perform some live video processing while the drone is flying
 #    streaming_example.fly()
 #    # Stop the video stream
-#    streaming_example.stop()
+    time.sleep(300)
+    streaming_example.stop()
     # Recorded video stream postprocessing
     # streaming_example.replay_with_vlc()
 
 
-# if __name__ == "__main__":
-# #    SKYCTRL_IP = "192.168.53.1"
-#    DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
-# ##    drone = olympe.Drone(SKYCTRL_IP)
-#    drone = olympe.Drone(DRONE_IP)
+if __name__ == "__main__":
+   SKYCTRL_IP = "192.168.53.1"
+   drone = olympe.Drone(SKYCTRL_IP)
+   assert drone.connect(retry=3)
+   test_streaming(drone)
+   drone.disconnect()
+# #    DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
+#    drone = olympe.Drone(SKYCTRL_IP)
+#    # drone = olympe.Drone(DRONE_IP)
 #    assert drone.connect()
 #    test_streaming(drone)

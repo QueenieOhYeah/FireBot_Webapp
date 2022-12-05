@@ -1,0 +1,146 @@
+
+body{
+    font-family: 'Montserrat', sans-serif;
+    line-height: 2;
+}
+
+.mt-5, .my-5{
+    margin-top: 80px!important;
+}
+
+.ml-2, .mx-2 {
+    margin-left: -3rem!important;
+}
+
+.mx-2 mt-5{
+    margin: 0;
+}
+
+.navbar-brand{
+    display: inline-block;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    line-height: inherit;
+    white-space: nowrap;
+}
+
+a.navbar-brand.col-sm-3.col-md-2.mr-0 {
+    /* color: blue; */
+    text-align: center;
+    transition-duration: 0.4s;
+}
+
+a.navbar-brand.col-sm-3.col-md-2.mr-0:hover {
+    color: rgb(255, 255, 255);
+    background-color: rgba(58, 83, 39, 0.71);
+}
+
+.bg-dark{
+    background-color: #9e9155d7!important;
+}
+
+.p-0 {
+    padding: 10!important;
+}
+
+.h2{
+    font-size: 1.4rem;
+    position: relative;
+    right: auto;
+    left: auto;
+    margin-top: 5px;
+    font-weight: bold;
+    color: rgba(58, 83, 39, 0.879);
+}
+
+.col-4{
+    max-width: 200%;
+}
+
+.table{
+    width: 100%;
+    font-size: 1rem;
+    font-weight: normal;
+    background-color: rgba(58, 83, 39, 0.439);
+    color: rgb(255, 255, 255);
+}
+
+input{
+    height: 30px;
+    margin-left: 5px;
+    margin-right: 30px;
+}
+
+label {
+    display:inline-block;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 20px;
+    padding-right: 0px;
+    padding-left: 0px;
+    font-style:normal;
+    font-weight:initial;
+    font-size: 1rem;
+    color: #695709;
+}
+
+button{
+    display: inline-block;
+    padding: 10px 10px;
+    border-radius:8px;
+    background-color:rgba(58, 83, 39, 0.71);
+    color: rgb(255, 255, 255);
+    border: none;
+    margin-right: 20px;
+    font-size: 1rem;
+    width: 250px;
+    transition-duration: 0.4s;
+}
+
+button:hover {
+    background-color: #b89b1c!important;
+    color: white;
+}
+
+#missionData{
+    margin-top: 20px;
+}
+
+.fb{
+    max-width: 200px;
+    margin-top: -80px;
+}
+
+.logofb{
+    max-height: 50px;
+    margin-right: 220px;
+}
+
+hr{
+    border-top-width: 4px;
+    border-top-style: solid;
+    border-top-color: rgba(58, 83, 39, 0.71);
+    margin-top: -10px;
+}
+
+.hr_2{
+    border-top-width: 2px;
+    border-top-style: solid;
+    border-top-color: rgba(58, 83, 39, 0.71);
+    margin-top: 10px;
+}
+
+.title_table{
+    font-size: 1.2rem;
+    font-weight:normal;
+    color: #096943;
+    margin-top: 8px;
+    margin-bottom: 12px;
+}
+
+.input_place {
+    width:30%;
+    display: inline-block;
+}

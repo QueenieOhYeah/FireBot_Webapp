@@ -9,33 +9,51 @@ html>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
         crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='content/map.css') }}">
+
 </head>
 <body style="zoom: 0.9;">
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0"
-    href="#">FireBot Data Collection System</a>
+    <!-- Bb added -->
+    <div class="logofb">
+        <!-- <h4>FireBot</h4> -->
+        <img class="fb" src="../static/image2/FireBOT logo2-06.png" alt="fb">
+    </div>
+    <!-- Bb added -->
+<!--    <a class="navbar-brand col-sm-3 col-md-2 mr-0"-->
+<!--    href="#">Data Collection</a>-->
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/createMission/">Create Mission</a>
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Run Mission</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Collect Data</a>
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/data/">Check Data</a>
 </nav>
 
 <div class="mx-2 mt-5">
 <!--    <a href="#createMission/">Create Mission</a>-->
 <!--    <a href="#">Run Mission</a>-->
-    <div class="row">
+    <div> <!-- class = "row" -->
         <main role="main" class="col-sm-11 mx-auto">
             <div class="d-flex justify-content-between flex-wrap
             flex-md-nowrap align-items-center pt-3 pb-2 mb-3 borderbottom">
                 <h1 class="h2">Create New Missions</h1>
+
             </div>
-            <div class="row ">
-                <div class="col-8">
+            <hr>
+            <div> <!-- class = "row" -->
+                <!-- <div class="col-8">
                     <div class="w-100" style="height: 75vh" id="map"></div>
-                </div>
-                <div class="col-4">
+                </div> -->
+                <div>
                     <div style="max-height: 300px; overflow-x: unset; overflow-y: scroll">
+                        <h3 class="title_table">Table of GPS coordinates</h3>
                         <table class="table" id="coordinatesTable">
                             <thead>
+                            <!-- Bb added -->
+                            <!-- <tr>
+                                <td class="title_table">Table of GPS coordinates</td>
+                                <td></td>
+                                <td></td> -->
+                            </tr>
+                            <!-- Bb added -->
                             <tr>
                                 <td>Latitude</td>
                                 <td>Longitude</td>
@@ -46,33 +64,31 @@ html>
                             </tbody>
                         </table>
                     </div>
-                    <br>
+                    <hr class="hr_2">
                     <p><b>Please add waypoints</b></p>
-<!--                    <label id="altLabel" for="groundCover">Please add waypoints</label>-->
-<!--                    <select class="w-100" id="groundCover">-->
-<!--                        <option value="0.9">Altitude: .9 Meters / Width: 1 Meter</option>-->
-<!--                        <option value="1.35">Altitude 1.4 Meters / Width: 2 Meters</option>-->
-<!--                        <option value="1.7">Altitude: 1.7 Meters / Width: 3 Meters</option>-->
-<!--                        <option value="3.0">Altitude: 3 Meters / Width: 5 Meters</option>-->
-<!--                        <option value="7.0">Altitude: 7 Meters / Width: 10 Meters</option>-->
-<!--                    </select>-->
-                    <br>
 
                     <form id="formData">
-                        <label for="formlat">Latitude:</label>
-                        <input type="number" id="formlat" name="formlat" min = -90 max = 90 step = ".000001"  required /><br><br>
-                        <label for="formlong">Longitude:</label>
-                        <input type="number" id="formlong" name="formlong" min = -180 max = 180 step = ".000001"  required /><br><br>
-                        <label for="formalt">Altitude:</label>
-                        <input type="number" id="formalt" name="formalt" min = 0 step = ".000001"  required /><br><br>
+                        <div class="input_place">
+                            <label for="formlat">Latitude:</label>
+                            <input type="number" id="formlat" name="formlat" min = -90 max = 90 step = ".000001"  required />
+                        </div>
+                        <div class="input_place">
+                            <label for="formlong">Longitude:</label>
+                            <input type="number" id="formlong" name="formlong" min = -180 max = 180 step = ".000001"  required />
+                        </div>
+                        <div class="input_place">
+                            <label for="formalt">Altitude:</label>
+                            <input type="number" id="formalt" name="formalt" min = 0 step = ".000001"  required />
+                        </div>
                         <button type="submit">Add Waypoint to Mission</button>
+                        <button onclick="reset()">Reset Mission</button>
                     </form>
-
-                    <button onclick="reset()">Reset Mission</button>
                     <form id="missionData">
                         <label for="missionName">Mission Name</label>
-                        <input type="text" id="missionName" name="missionName" required /><br><br>
-                        <button type="submit">Confirm and Save Mission</button>
+                        <input type="text" id="missionName" name="missionName" required />
+                        <div>
+                            <button type="submit">Confirm and Save Mission</button>
+                        </div>
                     </form>
 <!--                    <button onclick="saveMission()">Confirm and Save Mission</button>-->
 
@@ -82,7 +98,7 @@ html>
 
                 </div>
             </div>
-            <div id="images_container" class="row"></div>
+<!--            <div id="images_container" class="row"></div>-->
         </main>
     </div>
 </div>

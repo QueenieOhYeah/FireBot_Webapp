@@ -1,3 +1,5 @@
+
+from concurrent.futures import ThreadPoolExecutor
 from flask import Flask, request, render_template
 # import droneMapper
 import json
@@ -10,9 +12,21 @@ import flight
 import connection
 import battery
 import read_missions
+import media
+import test
 
 app = Flask(__name__)
+_threadpool_cpus = int(os.cpu_count()/2)
+EXECUTOR = ThreadPoolExecutor(max_workers=max(_threadpool_cpus, 2))
 
+# DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
+# #
+# # # controller
+drone = None
+DRONE_IP = os.environ.get("DRONE_IP", "192.168.53.1")
+# # DRONE_IP = "192.168.42.1"
+drone = olympe.Drone(DRONE_IP)
+# drone.connect(retry=3)
 # Simulated
 # DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
 #
@@ -39,31 +53,28 @@ def display_html_page():
 
 @app.route('/connectDrone')
 def connect_to_drone():
-    global drone
-    global streamer
-    global is_stream
+    future = EXECUTOR.submit(connect_to_drone_thread)
+    result = future.result()
+    return result
 
-    # drone.connect(retry=3)
-    drone.connect()
+def connect_to_drone_thread():
+    global drone
+
+    # drone.connect()
+    drone.connect(retry=3)
     if connection.check_drone_connection(drone):
-        # print("connect to drone")
-        if not streamer:
-            streamer = videostream_button.OlympeStreaming(drone)
-            ''' Decide when to start video streaming'''
-            streamer.start()
         return "success"
     return "failure"
 
 @app.route('/startVideo')
 def start_video():
-    global drone
-    global streamer
-    # if not streamer:
-    #     print("streamer is none")
-    print(streamer)
-    # streamer = videostream_button.OlympeStreaming(drone)
-    print(streamer)
-    streamer.start()
+    # global drone
+    # global streamer
+    # # if not streamer:
+    # #     print("streamer is none")
+    # # streamer = videostream_button.OlympeStreaming(drone)
+    # print(streamer)
+    # streamer.start()
     return "start Video"
 
 
@@ -83,8 +94,17 @@ def land():
 
 @app.route('/fly', methods=["POST"])
 def fly():
+    EXECUTOR.submit(send_fly())
+    return render_template('index.html')
+
+
+def send_fly():
     global missions
     global drone
+    # DRONE_IP = os.environ.get("DRONE_IP", "192.168.53.1")
+    # # DRONE_IP = "192.168.42.1"
+    # drone = olympe.Drone(DRONE_IP)
+    # drone.connect(retry=3)
     mission = request.form.get('missionOptions')
     max_alt = request.form.get('maxAlt')
     elevation = request.form.get('takeOffEle')
@@ -93,25 +113,39 @@ def fly():
     print(elevation)
     gps_points = missions[mission]
     flight.flight(drone, gps_points, eval(max_alt), eval(elevation))
-    return render_template('index.html')
+    # test.flight(drone, gps_points, eval(max_alt), eval(elevation))
+    drone.disconnect()
+
+
+# CONNECTION = False
 
 
 @app.route('/connect')
 def connect_status():
-    global drone
-    print(drone)
-    print(connection.check_drone_connection(drone))
-    if connection.check_drone_connection(drone):
-        print("success")
+    future = EXECUTOR.submit(connect_status_thread)
+    result = future.result()
+    if result:
         return "connected"
     return "disconnected"
 
 
+def connect_status_thread():
+    global drone
+    if connection.check_drone_connection(drone):
+        return True
+
+
 @app.route('/battery')
 def get_battery_level():
+    global bat
+    future = EXECUTOR.submit(battery_thread)
+    result = future.result()
+    return result
+
+
+def battery_thread():
     global drone
-    print(drone)
-    print("drone")
+    global bat
     response = battery.battery_level(drone)
     return str(response)
 
@@ -153,6 +187,7 @@ def save_mission():
     # droneMapper.main()
     return content
 
+
 @app.route('/data/')
 def get_data():
     return render_template('images.html')
@@ -170,17 +205,21 @@ def get_images():
     return images_urls
 
 
-DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
-# #
-# # # controller
-# # # DRONE_IP = os.environ.get("DRONE_IP", "192.168.53.1")
-# # # DRONE_IP = "192.168.53.1"
-drone = olympe.Drone(DRONE_IP)
-# drone.connect(retry=3)
-streamer = None
+@app.route('/data/download')
+def download_data():
+    # EXECUTOR.submit(download_data_thread)
+    print("download")
+    return "DONE"
+
+
+def download_data_thread():
+    media.download()
+    return "DONE"
+
+# streamer = None
+# streamer.start()
 # streamer = videostream_button.OlympeStreaming(drone)
-is_stream = False
-import threading
+
 
 
 # two videostreams use only one
@@ -190,4 +229,3 @@ missions = None
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)
-

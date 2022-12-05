@@ -1,0 +1,146 @@
+body{
+    font-family: 'Montserrat', sans-serif;
+    line-height: 2;
+}
+
+.mt-5, .my-5{
+    margin-top: 80px!important;
+}
+
+.mx-2 mt-5{
+    margin: 0;
+}
+.ml-2, .mx-2 {
+    margin-left: -3rem!important;
+}
+
+.row {
+    /* display: inline-block; */
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    margin-left: 34px;
+}
+
+.navbar-brand{
+    display: inline-block;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    line-height: inherit;
+    white-space: nowrap;
+}
+
+a.navbar-brand.col-sm-3.col-md-2.mr-0 {
+    /* color: blue; */
+    text-align: center;
+    transition-duration: 0.4s;
+}
+
+a.navbar-brand.col-sm-3.col-md-2.mr-0:hover {
+    color: rgb(255, 255, 255);
+    background-color: rgba(58, 83, 39, 0.71);
+}
+
+.bg-dark{
+    background-color: #9e9155d7!important;
+}
+
+.p-0 {
+    padding: 10!important;
+}
+
+hr {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top-width: 4px;
+    border-top-style: solid;
+    border-top-color: rgba(58, 83, 39, 0.71);
+}
+
+label {
+    display: inline-block;
+    margin-bottom: 0rem;
+    padding-top: 25px;
+    padding-bottom: 10px;
+    font-style:normal;
+    font-weight:initial;
+    font-size: 1rem;
+    color: #695709;
+}
+
+#altLabel{
+    font-style:normal;
+    font-weight:bolder;
+    font-size: 1.2rem;
+    color: #695709;
+}
+
+select{
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+input{
+    height: 30px;
+    margin-left: 10px;
+}
+
+#maxAlt{
+    margin-left: 35px;
+}
+
+button{
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius:8px;
+    background-color:rgba(58, 83, 39, 0.71);
+    color: rgb(255, 255, 255);
+    border: none;
+    margin-right: 20px;
+    font-size: 1rem;
+    width: 200px;
+    transition-duration: 0.4s;
+}
+
+button:hover {
+    background-color: #b89b1c!important;
+    color: white;
+}
+
+.fb{
+    max-width: 200px;
+    margin-top: -80px;
+}
+
+.logofb{
+    max-height: 50px;
+    /* background-color: rgba(255, 255, 255, 0.853); */
+    margin-right: 220px;
+}
+
+/* .hr_2{
+    border-top-width: 4px;
+    border-top-style: solid;
+    border-top-color: rgba(58, 83, 39, 0.71);
+    margin-top: 10px;
+    margin-left: 38px;
+} */
+
+/* .h2{
+    font-size: 1.4rem;
+    position: relative;
+    right: auto;
+    left: auto;
+    margin-top: -16px;
+    margin-left: 38px;
+    font-weight: bold;
+    color: rgba(58, 83, 39, 0.879);
+} */
+
+#droneConnection{
+    margin-top: 20px;
+}

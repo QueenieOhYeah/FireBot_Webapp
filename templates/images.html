@@ -9,20 +9,39 @@ html>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
         crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='content/imageGallery.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--    <link rel="stylesheet" href="{{ url_for('static', filename='content/map.css') }}">-->
+<!--    <style>-->
+<!--&lt;!&ndash;&ndash;&gt;-->
+<!--    </style>-->
 </head>
 <body style="zoom: 0.9;">
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0"
-    href="#">FireBot Data Collection System</a>
+    <div class="logofb">
+        <!-- <h4>FireBot</h4> -->
+        <img class="fb" src="../static/image2/FireBOT logo2-06.png" alt="fb">
+    </div>
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/createMission/">Create Mission</a>
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Run Mission</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Collect Data</a>
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/images/">Check Data</a>
 </nav>
 
 <div class="mx-2 mt-5">
 <!--    <a href="#createMission/">Create Mission</a>-->
 <!--    <a href="#">Run Mission</a>-->
+
+
+  <div class="horizontal-center">
+    <button onclick="downloadImgs(this)" id="imageSubmit">
+        Download data
+    </button>
+    <div id="loader" style="display:none"></div>
+  </div>
+
+
     <div class="row">
+
         <main role="main" class="col-sm-11 mx-auto">
             <div id="images_container" class="row"></div>
         </main>
@@ -31,6 +50,7 @@ html>
     <div id="myModal" class="modal">
       <span class="close">&times;</span>
       <img class="modal-content" id="img01">
+<!--      <video class="modal-content" id="img01">-->
       <div id="caption"></div>
     </div>
 </div>
@@ -56,16 +76,37 @@ html>
 <!--            });-->
 <!--        }-->
 <!--    }-->
-        function setModal() {
+
+        function downloadImgs(button) {
+<!--            button.style.visibility = "hidden";-->
+            button.innerHTML = `<i class="fa fa-spinner fa-spin"></i>Loading`;
+            button.disabled = true;
+
+            $.ajax({
+                url: "download",
+                type: "GET",
+                success: function(result) {
+                    console.log(result);
+                    check_for_images();
+                },
+                error: function(err) {
+                    console.log(err);
+                    alert(err);
+                }
+            });
+
+        }
+
+        function setModal(element) {
             var modal = document.getElementById("myModal");
-            console.log(this)
+            console.log(element)
 
 <!--            var img = document.getElementById("myImg");-->
             var modalImg = document.getElementById("img01");
             var captionText = document.getElementById("caption");
             modal.style.display = "block";
-            modalImg.src = this.src;
-            captionText.innerHTML = "hi";
+            modalImg.src = element.src;
+            captionText.innerHTML = "";
 <!--            captionText.innerHTML = this.alt;-->
             var span = document.getElementsByClassName("close")[0];
             span.onclick = function() {
@@ -82,15 +123,18 @@ html>
                 dataType: "json",
                 type: "GET",
                 success: function(images) {
+                    var button = document.getElementById("imageSubmit");
+                    button.style.visibility = "hidden";
                     display_images(images);
                 },
                 error: function(err) {
+                    console.log(err);
                     alert(err);
                 }
             });
 
         }
-    check_for_images();
+<!--    check_for_images();-->
 
 
     function display_images(img_data) {
@@ -99,13 +143,16 @@ html>
         for(let index in img_data) {
             let img_url = "static/images/" + img_data[index];
             let name = img_data[index];
-<!--            let image_template = `<div class="col-3"><img class="img-thumbnail" src="${img_url}"/></div>`;-->
-<!--            let image_template = `<div class="col-3"><img class="img-thumbnail" src="{{url_for('static', filename='')}}{{name}}"/></div>`;-->
             let image_template = `<div class="col-3"><img class="img-thumbnail" src="{{url_for('static', filename='images/'+'NAME')}}" onclick="setModal(this)"/></div>`.replace("NAME",name);
+<!--            let image_template = `<div class="col-3"><video src="{{url_for('static', filename='images/'+'NAME')}}" onclick="setModal(this)"/></div>`.replace("NAME",name);-->
+
             images += image_template;
         }
         images_container.innerHTML = images;
     }
+
+
+
 
 </script>
 </body>

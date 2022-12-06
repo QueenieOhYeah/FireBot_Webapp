@@ -143,33 +143,34 @@ def take_off(drone):
         )
     ).wait()
 
-if __name__ == "__main__":
-    # eventually IP will be specified depending on what drone is chosen
-    # IP = "10.202.0.1"
-    IP = "192.168.53.1"
+# if __name__ == "__main__":
+#     # eventually IP will be specified depending on what drone is chosen
+#     # IP = "10.202.0.1"
+#     IP = "192.168.53.1"
+#
+#     # real drone
+#     # IP = "192.168.42.1"
+#     drone = olympe.Drone(IP)
+#     assert drone.connect(retry=3)
+#     # drone(TakeOff()).wait().success()
+#     streamer = OlympeStreaming(drone)
+#     streamer.start()
+#
+#     drone(
+#         TakeOff()
+#         >> FlyingStateChanged(state="hovering", _timeout=10, _policy="check_wait")).wait().success()
+#     time.sleep(5)
+#     #
+#
+#     drone(Landing()).wait().success()
+#     #
+#     # # take_off(drone)
+#     #
+#     # ### Flight commands here ###
+#     time.sleep(300)
+#
+#     streamer.stop()
+#
+#     # drone(Landing()).wait().success()
+#     drone.disconnect()
 
-    # real drone
-    # IP = "192.168.42.1"
-    drone = olympe.Drone(IP)
-    assert drone.connect(retry=3)
-    # drone(TakeOff()).wait().success()
-    streamer = OlympeStreaming(drone)
-    streamer.start()
-
-    drone(
-        TakeOff()
-        >> FlyingStateChanged(state="hovering", _timeout=10, _policy="check_wait")).wait().success()
-    time.sleep(5)
-    #
-
-    drone(Landing()).wait().success()
-    #
-    # # take_off(drone)
-    #
-    # ### Flight commands here ###
-    time.sleep(300)
-
-    streamer.stop()
-
-    # drone(Landing()).wait().success()
-    drone.disconnect()

@@ -205,6 +205,7 @@ def get_images():
     return images_urls
 
 
+
 @app.route('/data/download')
 def download_data():
     # EXECUTOR.submit(download_data_thread)
@@ -215,10 +216,6 @@ def download_data():
 def download_data_thread():
     media.download()
     return "DONE"
-
-# streamer = None
-# streamer.start()
-# streamer = videostream_button.OlympeStreaming(drone)
 
 
 

@@ -170,7 +170,7 @@ html>
 <!--        }-->
 
         .description em {
-          color: rgba(58, 83, 39, 0.71);
+          color: red;
         }
     </style>
 </head>
@@ -188,9 +188,9 @@ html>
 <div class="mx-2 mt-5">
     <div class="row">
         <main role="main" class="col-sm-11 mx-auto">
-            <p class = "description" id = droneConnection>Connection to drone: <b><em>disconnected</em></b></p>
-            <p class = "description" id = controllerConnection>Connection to controller: <b><em>disconnected</em></b></p>
-            <p id = battery>Battery level: -</p>
+            <p class = "description">Connection to drone: <b><em id = droneConnection>disconnected</em></b></p>
+            <p class = "description">Connection to controller: <b><em id = controllerConnection>disconnected</em></b></p>
+            <p class = "description">Battery level: <b><em id = battery>-</em></b></p>
             <hr>
             <form id="missionData" action="/fly" method="post">
                 <label id="altLabel" for="missionOptions">Choose a mission</label>
@@ -232,7 +232,7 @@ html>
                 success: function(result) {
                     if (result == "success") {
                         DroneConnectionFlag = true;
-                        console.log("here")
+<!--                        console.log("here")-->
                     }
 
                 }
@@ -304,7 +304,8 @@ html>
 
     function update_battery(result) {
         let drone_battery = document.getElementById('battery');
-        let text = "Battery level: " + result;
+<!--        let text = "Battery level: " + result;-->
+        let text = result;
         drone_battery.innerHTML = text;
     }
 
@@ -334,10 +335,29 @@ html>
     monitor_connection()
 
     function update_connection(result) {
-        if (result == "disconnected") DroneConnectionFlag = false
+        if (result == "disconnected") {
+            DroneConnectionFlag = false;
+            const boxes = document.querySelectorAll('.description em');
+            console.log("here");
+            console.log(boxes);
+
+            boxes.forEach(box => {
+                box.style.color = 'red';
+            });
+
+        }
+        else {
+            const boxes = document.querySelectorAll('.description em');
+            console.log("here");
+            console.log(boxes);
+
+            boxes.forEach(box => {
+                box.style.color = 'rgba(58, 83, 39, 0.71)';
+            });
+        }
         let drone_connection = document.getElementById('droneConnection');
         let controller_connection = document.getElementById('controllerConnection');
-        let text = "Connection to drone: " + result;
+        let text = result;
         drone_connection.innerHTML = text;
         controller_connection.innerHTML = text;
     }
@@ -358,15 +378,15 @@ html>
     function uploadMissionForm(data) {
         for(var index in data) {
            for (const [key, value] of Object.entries(data[index])) {
-               console.log(value)
-               console.log(data[index][key])
+<!--               console.log(value)-->
+<!--               console.log(data[index][key])-->
                $('#missionOptions').append(`<option value=`+key+`>`+key+`</option>`);
            }
         }
     }
 
     function doSomething() {
-        console.log("here")
+        return;
     }
 
 <!--    window.addEventListener('beforeunload', function(e) {-->

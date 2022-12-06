@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 
 
 # Drone IP
+
 def download():
 	ANAFI_IP = "10.202.0.1"
 	SKYCTRL_IP = "192.168.53.1"
